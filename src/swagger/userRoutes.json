@@ -1,0 +1,344 @@
+{
+  "/users/register": {
+    "post": {
+      "summary": "Register a new user",
+      "operationId": "createUser",
+      "tags": ["User"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "description": "User registration data",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "zeeshan" },
+                "email": { "type": "string", "example": "zeesh654@gmail.com" },
+                "password": { "type": "string", "example": "zeeshan" },
+                "role": {
+                  "type": "string",
+                  "enum": ["USER", "ADMIN", "STAFF"],
+                  "example": "USER"
+                }
+              },
+              "required": ["name", "email", "password", "role"]
+            },
+            "example": {
+              "name": "zeeshan",
+              "email": "zeesh654@gmail.com",
+              "password": "zeeshan",
+              "role": "USER"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "User created successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "data": { "type": "object" }
+                },
+                "example": {
+                  "message": "User created successfully",
+                  "data": {
+                    "_id": "603d9c207f9b4b1f3b10b0e9",
+                    "name": "zeeshan",
+                    "email": "zeesh654@gmail.com",
+                    "role": "USER"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "User already exists or invalid data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "example": {
+                    "message": "User already exists"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/login": {
+    "post": {
+      "summary": "Login a user",
+      "operationId": "loginUser",
+      "tags": ["User"],
+      "requestBody": {
+        "description": "User login credentials",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "string", "example": "zeesh654@gmail.com" },
+                "password": { "type": "string", "example": "zeeshan" }
+              },
+              "required": ["email", "password"]
+            },
+            "example": {
+              "email": "zeesh654@gmail.com",
+              "password": "zeeshan"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Login successful",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "d2FsY19yZWZyZXNoX3Rva2Vu"
+                  },
+                  "message": { "type": "string", "example": "Login successful" }
+                },
+                "example": {
+                  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ",
+                  "refreshToken": "d2FsY19yZWZyZXNoX3Rva2Vu",
+                  "message": "Login successful"
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid credentials or unverified user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid email or password"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/refresh": {
+    "get": {
+      "summary": "Refresh access and refresh tokens",
+      "operationId": "refreshTokens",
+      "tags": ["User"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Tokens refreshed successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "d2FsY19yZWZyZXNoX3Rva2Vu"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Tokens refreshed successfully"
+                  }
+                },
+                "example": {
+                  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ",
+                  "refreshToken": "d2FsY19yZWZyZXNoX3Rva2Vu",
+                  "message": "Tokens refreshed successfully"
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid refresh token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid refresh token"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/logout": {
+    "patch": {
+      "summary": "Logout a user",
+      "operationId": "logoutUser",
+      "tags": ["User"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Logout successful",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Logout successful"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/forgot-password": {
+    "post": {
+      "summary": "Request password reset",
+      "operationId": "forgotPassword",
+      "tags": ["User"],
+      "requestBody": {
+        "description": "Email to reset password",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "string", "example": "zeesh654@gmail.com" }
+              },
+              "required": ["email"]
+            },
+            "example": {
+              "email": "zeesh654@gmail.com"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset email sent successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/update-password": {
+    "patch": {
+      "summary": "Update user password",
+      "operationId": "updatePassword",
+      "tags": ["User"],
+      "requestBody": {
+        "description": "New password and confirmation",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": { "type": "string", "example": "newPassword123" },
+                "token": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InplZXNoNjU0QGdtYWlsLmNvbSIsImlhdCI6MTczNzAzMTAwN30.86V00lL-4bxws8GSP5B-XJMXrw41L8QaNxbA7_RgHYQ"
+                }
+              },
+              "required": ["password", "token"]
+            },
+            "example": {
+              "password": "newPassword123",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InplZXNoNjU0QGdtYWlsLmNvbSIsImlhdCI6MTczNzAzMTAwN30.86V00lL-4bxws8GSP5B-XJMXrw41L8QaNxbA7_RgHYQ"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

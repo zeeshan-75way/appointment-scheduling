@@ -9,6 +9,8 @@ import { config } from "dotenv";
 import cookieParser = require("cookie-parser");
 import { IUser } from "./src/users/user.dto";
 import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./src/swagger/swagger";
+
 import cron from "node-cron";
 import { upcomingReminder } from "./src/appointment/appointment.controller";
 config();
@@ -35,7 +37,7 @@ const initApp = async (): Promise<void> => {
   await initDB();
 
   app.use("/api", routes);
-
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.get("/", (req: Request, res: Response) => {
     res.send({ status: "ok" });
   });

@@ -1,0 +1,390 @@
+{
+  "/appointment": {
+    "get": {
+      "summary": "Get all user appointments",
+      "operationId": "getUserAppointments",
+      "tags": ["Appointment"],
+      "security": [
+        {
+          "roleAuth": ["ADMIN", "USER"]
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "User's appointments fetched successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "60c72b2f9f1b2c5f74c8977f"
+                    },
+                    "availabilityId": {
+                      "type": "string",
+                      "example": "60c72b2f9f1b2c5f74c8977f"
+                    },
+                    "serviceId": {
+                      "type": "string",
+                      "example": "60c72b2f9f1b2c5f74c89780"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "60c72b2f9f1b2c5f74c89790"
+                    },
+                    "status": { "type": "string", "example": "BOOKED" },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2025-01-20"
+                    },
+                    "startTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-01-20T09:00:00Z"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "_id": "60c72b2f9f1b2c5f74c8977f",
+                    "availabilityId": "60c72b2f9f1b2c5f74c8977f",
+                    "serviceId": "60c72b2f9f1b2c5f74c89780",
+                    "userId": "60c72b2f9f1b2c5f74c89790",
+                    "status": "BOOKED",
+                    "date": "2025-01-20",
+                    "startTime": "2025-01-20T09:00:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "No appointments found for user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "No Appointment for User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "summary": "Book an appointment",
+      "operationId": "bookAppointment",
+      "tags": ["Appointment"],
+      "security": [
+        {
+          "roleAuth": ["ADMIN", "STAFF", "USER"]
+        }
+      ],
+      "requestBody": {
+        "description": "Appointment data to book an appointment",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "availabilityId": {
+                  "type": "string",
+                  "example": "60c72b2f9f1b2c5f74c8977f"
+                },
+                "serviceId": {
+                  "type": "string",
+                  "example": "60c72b2f9f1b2c5f74c89780"
+                }
+              },
+              "required": ["availabilityId", "serviceId"]
+            },
+            "example": {
+              "availabilityId": "60c72b2f9f1b2c5f74c8977f",
+              "serviceId": "60c72b2f9f1b2c5f74c89780"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Appointment booked successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Appointment Booked Successfully"
+                  },
+                  "appointment": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c8977f"
+                      },
+                      "availabilityId": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c8977f"
+                      },
+                      "serviceId": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c89780"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c89790"
+                      },
+                      "status": { "type": "string", "example": "BOOKED" },
+                      "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-01-20"
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-20T09:00:00Z"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Appointment Booked Successfully",
+                  "appointment": {
+                    "_id": "60c72b2f9f1b2c5f74c8977f",
+                    "availabilityId": "60c72b2f9f1b2c5f74c8977f",
+                    "serviceId": "60c72b2f9f1b2c5f74c89780",
+                    "userId": "60c72b2f9f1b2c5f74c89790",
+                    "status": "BOOKED",
+                    "date": "2025-01-20",
+                    "startTime": "2025-01-20T09:00:00Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid request data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid request data"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/appointment/reschedule": {
+    "patch": {
+      "summary": "Reschedule an appointment",
+      "operationId": "rescheduleAppointment",
+      "tags": ["Appointment"],
+      "security": [
+        {
+          "roleAuth": ["ADMIN", "USER"]
+        }
+      ],
+      "requestBody": {
+        "description": "Appointment data to reschedule",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "appointmentId": {
+                  "type": "string",
+                  "example": "60c72b2f9f1b2c5f74c8977f"
+                },
+                "availabilityId": {
+                  "type": "string",
+                  "example": "60c72b2f9f1b2c5f74c89780"
+                }
+              },
+              "required": ["appointmentId", "availabilityId"]
+            },
+            "example": {
+              "appointmentId": "60c72b2f9f1b2c5f74c8977f",
+              "availabilityId": "60c72b2f9f1b2c5f74c89780"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Appointment rescheduled successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Appointment Rescheduled Successfully"
+                  },
+                  "appointment": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c8977f"
+                      },
+                      "availabilityId": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c8977f"
+                      },
+                      "serviceId": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c89780"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c89790"
+                      },
+                      "status": { "type": "string", "example": "RESCHEDULED" },
+                      "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-01-21"
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-21T10:00:00Z"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Appointment Rescheduled Successfully",
+                  "appointment": {
+                    "_id": "60c72b2f9f1b2c5f74c8977f",
+                    "availabilityId": "60c72b2f9f1b2c5f74c8977f",
+                    "serviceId": "60c72b2f9f1b2c5f74c89780",
+                    "userId": "60c72b2f9f1b2c5f74c89790",
+                    "status": "RESCHEDULED",
+                    "date": "2025-01-21",
+                    "startTime": "2025-01-21T10:00:00Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid request data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid request data"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/appointment/{id}": {
+    "patch": {
+      "summary": "Cancel an appointment",
+      "operationId": "cancelAppointment",
+      "tags": ["Appointment"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Appointment ID to cancel",
+          "schema": {
+            "type": "string",
+            "example": "60c72b2f9f1b2c5f74c8977f"
+          }
+        }
+      ],
+      "security": [
+        {
+          "roleAuth": ["ADMIN", "STAFF", "USER"]
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Appointment cancelled successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Appointment Cancelled Successfully"
+                  },
+                  "appointment": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "60c72b2f9f1b2c5f74c8977f"
+                      },
+                      "status": { "type": "string", "example": "CANCELLED" }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Appointment Cancelled Successfully",
+                  "appointment": {
+                    "_id": "60c72b2f9f1b2c5f74c8977f",
+                    "status": "CANCELLED"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Appointment not found",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Appointment not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

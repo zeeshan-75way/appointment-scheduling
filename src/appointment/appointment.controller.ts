@@ -78,6 +78,35 @@ export const upcomingReminder = async () => {
   }
 };
 
+/**
+ * @api {patch} /appointment/reschedule Reschedule an appointment
+ * @apiName rescheduleAppointment
+ * @apiGroup Appointment
+ * @apiPermission User
+ *
+ * @apiParam {ObjectId} appointmentId The id of the appointment to be rescheduled
+ * @apiParam {ObjectId} availabilityId The id of the availability slot to be booked
+ *
+ * @apiSuccess (200) {Object} appointment The rescheduled appointment
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *   "success": true,
+ *   "message": "Appointment Rescheduled Successfully",
+ *   "data": {
+ *     "_id": "5f7f4f1a45f3fa0017a5b1a5",
+ *     "userId": "5f7f4ef045f3fa0017a5b1a4",
+ *     "availabilityId": "5f7f4f2a45f3fa0017a5b1a6",
+ *     "date": "2020-10-06T12:00:00.000Z",
+ *     "startTime": "2020-10-06T12:00:00.000Z",
+ *     "status": "BOOKED",
+ *     "createdAt": "2020-10-06T12:01:14.116Z",
+ *     "updatedAt": "2020-10-06T12:01:14.116Z",
+ *     "__v": 0
+ *   }
+ * }
+ * @apiError AppointmentNotFound Appointment not found
+ * @apiError SlotNotFound Slot not found
+ */
 export const rescheduleAppointment = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = (req.user as IUser)._id;
@@ -112,6 +141,33 @@ export const rescheduleAppointment = asyncHandler(
   }
 );
 
+/**
+ * @api {get} /appointment Get all appointments for the logged in user
+ * @apiName getUserAppointments
+ * @apiGroup Appointment
+ * @apiPermission User
+ *
+ * @apiSuccess (200) {Object[]} appointments The appointments for the user
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *   "success": true,
+ *   "message": "Appointment Rescheduled Successfully",
+ *   "data": [
+ *     {
+ *       "_id": "5f7f4f1a45f3fa0017a5b1a5",
+ *       "userId": "5f7f4ef045f3fa0017a5b1a4",
+ *       "availabilityId": "5f7f4f2a45f3fa0017a5b1a6",
+ *       "date": "2020-10-06T12:00:00.000Z",
+ *       "startTime": "2020-10-06T12:00:00.000Z",
+ *       "status": "BOOKED",
+ *       "createdAt": "2020-10-06T12:01:14.116Z",
+ *       "updatedAt": "2020-10-06T12:01:14.116Z",
+ *       "__v": 0
+ *     }
+ *   ]
+ * }
+ * @apiError NoAppointmentForUser No appointment for user
+ */
 export const getUserAppointments = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = (req.user as IUser)._id;
@@ -124,3 +180,4 @@ export const getUserAppointments = asyncHandler(
     );
   }
 );
+

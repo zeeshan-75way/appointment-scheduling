@@ -21,7 +21,10 @@ export const roleAuth = (roles: IUser["role"][], publicRoutes: string[] = []) =>
 
       req.user = decodedUser as IUser;
       const user = req.user as IUser;
-      if (user.role == null || !["ADMIN", "USER"].includes(user.role)) {
+      if (
+        user.role == null ||
+        !["ADMIN", "USER", "STAFF"].includes(user.role)
+      ) {
         throw createHttpError(401, { message: "Invalid user role" });
       }
       if (!roles.includes(user.role)) {

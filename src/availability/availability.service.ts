@@ -7,8 +7,8 @@ import { Types } from "mongoose";
  * @param data - The data for the availability slots to be created
  * @returns The newly created availability slots
  */
-export const createAvailability = async (data: IAvailability) => {
-  const { staffId, date, startTime, endTime } = data;
+export const createAvailability = async (data: IAvailability, _id: string) => {
+  const { date, startTime, endTime } = data;
 
   const start = new Date(startTime); // Convert startDate to Date object
   const end = new Date(endTime); // Convert endDate to Date object
@@ -31,7 +31,7 @@ export const createAvailability = async (data: IAvailability) => {
     slotEnd.setHours(hour + 1, endMinute, 0, 0); // Set end time to 1 hour later
 
     const slot = new AvailabilitySchema({
-      staffId,
+      staffId:_id,
       date,
       startTime: slotStart.toISOString(), // Convert to ISO string format
       endTime: slotEnd.toISOString(), // Convert to ISO string format
@@ -89,7 +89,7 @@ export const bookAvailability = async (_id: string) => {
     },
     { new: true }
   );
-  return result
+  return result;
 };
 
 /**

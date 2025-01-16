@@ -8,6 +8,7 @@ const router = Router();
 router
   .post(
     "/",
+    roleAuth(["STAFF"]),
     AvailabilityValidation.createAvailability,
     catchError,
     AvailabilityController.createAvailability

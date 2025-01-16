@@ -1,0 +1,392 @@
+{
+  "/services": {
+    "post": {
+      "summary": "Create a new service",
+      "operationId": "createService",
+      "tags": ["Service"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "description": "Service creation data",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "Haircut" },
+                "description": {
+                  "type": "string",
+                  "example": "A stylish haircut service"
+                },
+                "price": { "type": "number", "example": 25 }
+              },
+              "required": ["name", "description", "price"]
+            },
+            "example": {
+              "name": "Haircut",
+              "description": "A stylish haircut service",
+              "price": 25
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Service created successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Service Created Successfully"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "607d1b2f4e1a2a1b2c3d4e5f"
+                      },
+                      "name": { "type": "string", "example": "Haircut" },
+                      "description": {
+                        "type": "string",
+                        "example": "A stylish haircut service"
+                      },
+                      "price": { "type": "number", "example": 25 },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2021-05-01T00:00:00.000Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "example": "2021-05-01T00:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "message": "Service Created Successfully",
+                "data": {
+                  "_id": "607d1b2f4e1a2a1b2c3d4e5f",
+                  "name": "Haircut",
+                  "description": "A stylish haircut service",
+                  "price": 25,
+                  "createdAt": "2021-05-01T00:00:00.000Z",
+                  "updatedAt": "2021-05-01T00:00:00.000Z"
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid data provided"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "get": {
+      "summary": "Get all services",
+      "operationId": "getAllServices",
+      "tags": ["Service"],
+      "responses": {
+        "200": {
+          "description": "Services fetched successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "607d1b2f4e1a2a1b2c3d4e5f"
+                    },
+                    "name": { "type": "string", "example": "Haircut" },
+                    "description": {
+                      "type": "string",
+                      "example": "A stylish haircut service"
+                    },
+                    "price": { "type": "number", "example": 25 }
+                  }
+                }
+              },
+              "example": [
+                {
+                  "_id": "607d1b2f4e1a2a1b2c3d4e5f",
+                  "name": "Haircut",
+                  "description": "A stylish haircut service",
+                  "price": 25
+                },
+                {
+                  "_id": "607d1b2f4e1a2a1b2c3d4e6f",
+                  "name": "Shampoo",
+                  "description": "Hair wash with nourishing shampoo",
+                  "price": 15
+                }
+              ]
+            }
+          }
+        },
+        "400": {
+          "description": "Error while fetching services",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Error while fetching services"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "/services/{id}": {
+    "get": {
+      "summary": "Get a service by ID",
+      "operationId": "getServiceById",
+      "tags": ["Service"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the service to retrieve",
+          "schema": {
+            "type": "string",
+            "example": "607d1b2f4e1a2a1b2c3d4e5f"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Service fetched successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string",
+                    "example": "607d1b2f4e1a2a1b2c3d4e5f"
+                  },
+                  "name": { "type": "string", "example": "Haircut" },
+                  "description": {
+                    "type": "string",
+                    "example": "A stylish haircut service"
+                  },
+                  "price": { "type": "number", "example": 25 }
+                }
+              },
+              "example": {
+                "_id": "607d1b2f4e1a2a1b2c3d4e5f",
+                "name": "Haircut",
+                "description": "A stylish haircut service",
+                "price": 25
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Service not found",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Service not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "summary": "Update a service by ID",
+      "operationId": "updateService",
+      "tags": ["Service"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the service to update",
+          "schema": {
+            "type": "string",
+            "example": "607d1b2f4e1a2a1b2c3d4e5f"
+          }
+        }
+      ],
+      "requestBody": {
+        "description": "Updated service data",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "Premium Haircut" },
+                "description": {
+                  "type": "string",
+                  "example": "A premium stylish haircut service"
+                },
+                "price": { "type": "number", "example": 40 }
+              },
+              "required": ["name", "description", "price"]
+            },
+            "example": {
+              "name": "Premium Haircut",
+              "description": "A premium stylish haircut service",
+              "price": 40
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Service updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Service Updated Successfully"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "607d1b2f4e1a2a1b2c3d4e5f"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Premium Haircut"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "A premium stylish haircut service"
+                      },
+                      "price": { "type": "number", "example": 40 }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Service Updated Successfully",
+                  "data": {
+                    "_id": "607d1b2f4e1a2a1b2c3d4e5f",
+                    "name": "Premium Haircut",
+                    "description": "A premium stylish haircut service",
+                    "price": 40
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid data or service not found",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid data or service not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "summary": "Delete a service by ID",
+      "operationId": "deleteService",
+      "tags": ["Service"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the service to delete",
+          "schema": {
+            "type": "string",
+            "example": "607d1b2f4e1a2a1b2c3d4e5f"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Service deleted successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Service Deleted Successfully"
+                  }
+                }
+              },
+              "example": {
+                "message": "Service Deleted Successfully"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Service not found",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Service not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

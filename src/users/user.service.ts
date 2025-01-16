@@ -201,3 +201,8 @@ export const updatePassword = async function (token: string, password: string) {
 
   return user;
 };
+
+export const getUserById = async function (_id: string) {
+  const user = await UserSchema.findById(_id);
+  return user;
+};
