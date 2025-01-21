@@ -3,12 +3,14 @@ import * as ServiceValidation from "./service.validation";
 import * as ServiceController from "./service.controller";
 import { catchError } from "../common/middleware/catch-error.middleware";
 import { roleAuth } from "../common/middleware/role-auth.middleware";
+import { limiter } from "../common/helper/rate-limiter";
 
 const router = Router();
 
 router
   .post(
     "/",
+    limiter,
     roleAuth(["ADMIN"]),
     ServiceValidation.creteService,
     catchError,
@@ -18,11 +20,17 @@ router
   .get("/:id", roleAuth(["ADMIN"]), ServiceController.getServiceById)
   .put(
     "/:id",
+    limiter,
     roleAuth(["ADMIN"]),
     ServiceValidation.updateService,
     catchError,
     ServiceController.updateService
   )
-  .delete("/:id", roleAuth(["ADMIN"]), ServiceController.deleteService);
+  .delete(
+    "/:id",
+    limiter,
+    roleAuth(["ADMIN"]),
+    ServiceController.deleteService
+  );
 
 export default router;

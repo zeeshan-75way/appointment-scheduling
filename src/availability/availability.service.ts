@@ -1,11 +1,14 @@
 import AvailabilitySchema from "./availability.schema";
 import { type IAvailability } from "./availability.dto";
 import { Types } from "mongoose";
-
 /**
- * Creates multiple availability slots for a given staffId, date and startTime-endTime range
- * @param data - The data for the availability slots to be created
- * @returns The newly created availability slots
+ * Creates availability slots for a given staff member.
+ * @param {Object} data - The object containing the data to create availability slots.
+ * @param {string} data.date - The date for which to create availability slots.
+ * @param {string} data.startTime - The time at which the availability slots should start.
+ * @param {string} data.endTime - The time at which the availability slots should end.
+ * @param {string} _id - The id of the staff member for which to create availability slots.
+ * @returns {Promise<IAvailability[]>} A promise that resolves to an array of created availability slots.
  */
 export const createAvailability = async (data: IAvailability, _id: string) => {
   const { date, startTime, endTime } = data;
@@ -31,7 +34,7 @@ export const createAvailability = async (data: IAvailability, _id: string) => {
     slotEnd.setHours(hour + 1, endMinute, 0, 0); // Set end time to 1 hour later
 
     const slot = new AvailabilitySchema({
-      staffId:_id,
+      staffId: _id,
       date,
       startTime: slotStart.toISOString(), // Convert to ISO string format
       endTime: slotEnd.toISOString(), // Convert to ISO string format
