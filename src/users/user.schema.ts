@@ -25,14 +25,6 @@ const UserSchema = new Schema<IUser>(
       enum: ["USER", "ADMIN", "STAFF"],
       default: "USER",
     },
-    phoneNumber: {
-      type: String,
-    },
-    isActive: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
     position:{
       type: String
     },
