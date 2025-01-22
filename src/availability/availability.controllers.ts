@@ -4,6 +4,7 @@ import { createResponse } from "../common/helper/response.helper";
 import asyncHandler from "express-async-handler";
 import { type Request, type Response } from "express";
 import { IUser } from "../users/user.dto";
+import { MoreThanOrEqual } from "typeorm";
 
 /**
  * Creates availability slots for a given staff member.
@@ -37,12 +38,11 @@ export const getAllAvailability = asyncHandler(
   async (req: Request, res: Response) => {
     const { startTime, date } = req.body;
     const filter: any = {};
-    let queryDate: Date;
     if (date) {
-      filter.date = { $gte: date };
+      filter.date = MoreThanOrEqual(date);
     }
     if (startTime) {
-      filter.startTime = { $gte: startTime };
+      filter.startTime = MoreThanOrEqual(startTime); 
     }
     const result = await AvailabilityService.getAllAvailability(filter);
     res.send(createResponse(result, "All Slots Fetched Successfully"));

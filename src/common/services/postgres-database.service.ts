@@ -1,16 +1,16 @@
 import { DataSource } from "typeorm";
 import { User } from "../../users/user.entity";
-// import { User } from "../entities/User";
-// import { Post } from "../entities/Post";
+import { Service } from "../../service/service.entity";
+import { Availability } from "../../availability/availability.entity";
 
 export const AppDataSource = new DataSource({
-  type: "postgres", // or "mysql", "sqlite", etc.
+  type: "postgres",
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT || "5432"),
   username: "postgres",
   password: "1234",
   database: "appointment-scheduling",
-  entities: [User],
-  migrations: ["src/migrations/*.ts"], // Migrations path
-  synchronize: true, // Use migrations for production
+  entities: [User, Service, Availability],
+  migrations: ["src/migrations/*.ts"],
+  synchronize: false,
 });

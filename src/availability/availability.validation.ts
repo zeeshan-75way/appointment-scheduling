@@ -1,11 +1,7 @@
 import { body } from "express-validator";
 
 export const createAvailability = [
-  body("staffId")
-    .notEmpty()
-    .withMessage("staffId is required")
-    .isString()
-    .withMessage("staffId must be a string"),
+  
   body("date")
     .notEmpty()
     .withMessage("date is required")

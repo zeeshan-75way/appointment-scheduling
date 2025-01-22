@@ -21,7 +21,7 @@ export class User {
   @Column({ type: "varchar", length: 255, unique: true, nullable: false })
   email: string;
 
-  @Column({ type: "varchar", nullable: true }) // `select: false` to omit by default
+  @Column({ type: "varchar", nullable: true }) 
   password?: string;
 
   @Column({

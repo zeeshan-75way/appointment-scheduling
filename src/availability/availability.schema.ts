@@ -5,6 +5,7 @@ const AvailabilitySchema = new Schema<IAvailability>(
   {
     staffId: {
       type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     date: {

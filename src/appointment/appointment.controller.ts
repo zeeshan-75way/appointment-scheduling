@@ -24,15 +24,15 @@ export const bookAppointment = asyncHandler(
     if (!bookSlot) {
       throw new Error("Slot not found");
     }
-    const appointment = await AppointmentService.bookAppointment(
-      req.body,
-      userId,
-      bookSlot?.date,
-      bookSlot?.startTime
-    );
-    if (appointment) {
-      res.send(createResponse(appointment, "Appointment Booked Successfully"));
-    }
+    // const appointment = await AppointmentService.bookAppointment(
+    //   req.body,
+    //   userId,
+    //   bookSlot?.date,
+    //   bookSlot?.startTime
+    // );
+    // if (appointment) {
+    //   res.send(createResponse(appointment, "Appointment Booked Successfully"));
+    // }
   }
 );
 
@@ -120,22 +120,22 @@ export const rescheduleAppointment = asyncHandler(
     const reschedule = await AppointmentService.rescheduleAppointment(
       appointmentId
     );
-    const slot = await AvailabilityService.cancelAvailability(
-      appointment.availabilityId._id
-    );
+    // const slot = await AvailabilityService.cancelAvailability(
+    //   appointment.availabilityId._id
+    // );
     const bookSlot = await AvailabilityService.bookAvailability(availabilityId);
     if (!bookSlot) {
       throw new Error("Slot not found");
     }
-    const newappointment = await AppointmentService.bookAppointment(
-      req.body,
-      userId,
-      bookSlot?.date,
-      bookSlot?.startTime
-    );
+    // const newappointment = await AppointmentService.bookAppointment(
+    //   req.body,
+    //   userId,
+    //   bookSlot?.date,
+    //   bookSlot?.startTime
+    // );
     if (appointment) {
       res.send(
-        createResponse(newappointment, "Appointment Rescheduled Successfully")
+        createResponse("newappointment", "Appointment Rescheduled Successfully")
       );
     }
   }

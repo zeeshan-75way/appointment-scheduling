@@ -1,6 +1,14 @@
 import AvailabilitySchema from "./availability.schema";
 import { type IAvailability } from "./availability.dto";
 import { Types } from "mongoose";
+import { AppDataSource } from "../common/services/postgres-database.service";
+import { Availability } from "./availability.entity";
+import { User } from "../users/user.entity";
+import { Equal, MoreThanOrEqual } from "typeorm";
+
+const availabilityRepository = AppDataSource.getRepository(Availability);
+const userRepository = AppDataSource.getRepository(User);
+
 /**
  * Creates availability slots for a given staff member.
  * @param {Object} data - The object containing the data to create availability slots.
@@ -23,7 +31,13 @@ export const createAvailability = async (data: IAvailability, _id: string) => {
   const endMinute = end.getMinutes(); // Get the minutes from endDate
 
   // Prepare availability slots
-  const availabilitySlots: IAvailability[] = [];
+  const availabilitySlots: any = [];
+  const userRepository = AppDataSource.getRepository(User);
+  const user = await userRepository.findOneBy({ _id });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   // Generate availability slots for each hour between startHour and endHour
   for (let hour = startHour; hour < endHour; hour++) {
@@ -33,31 +47,37 @@ export const createAvailability = async (data: IAvailability, _id: string) => {
     const slotEnd = new Date(slotStart); // Clone the start date and time
     slotEnd.setHours(hour + 1, endMinute, 0, 0); // Set end time to 1 hour later
 
-    const slot = new AvailabilitySchema({
-      staffId: _id,
-      date,
-      startTime: slotStart.toISOString(), // Convert to ISO string format
-      endTime: slotEnd.toISOString(), // Convert to ISO string format
-      isAvailable: true,
-    });
+    const slot = new Availability();
+    slot.staffId = user;
+    slot.date = date;
+    slot.startTime = slotStart; // Convert to ISO string format
+    slot.endTime = slotEnd; // Convert to ISO string format
+    slot.isAvailable = true;
 
     availabilitySlots.push(slot);
   }
 
-  const result = await AvailabilitySchema.insertMany(availabilitySlots);
+  // const result = await AvailabilitySchema.insertMany(availabilitySlots);
+  // return result;
+
+  console.log(availabilitySlots);
+  const result = await availabilityRepository.save(availabilitySlots);
   return result;
 };
-
 /**
  * Retrieves all available slots that match the given filter.
  * @param filter - The filter object containing keys of fields to filter by and their corresponding values.
  * @returns A promise that resolves to an array of available slots.
  */
-export const getAllAvailability = async (filter: IAvailability) => {
-  const result = await AvailabilitySchema.find({
-    ...filter,
-    isAvailable: true,
-  }).lean();
+export const getAllAvailability = async (filter: {}) => {
+  const result = await availabilityRepository.find({
+    where: {
+      ...filter,
+      isAvailable: true,
+    },
+    relations: ["staffId"],
+  });
+
   return result;
 };
 
@@ -69,13 +89,15 @@ export const getAllAvailability = async (filter: IAvailability) => {
 export const getStaffAvailability = async (_id: string) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  const result = await AvailabilitySchema.find({
-    staffId: _id,
-    date: { $gte: today },
-    isAvailable: true,
-  }).lean();
-
+  const result = await availabilityRepository.find({
+    where: {
+      staffId: Equal(_id),
+      date: MoreThanOrEqual(today),
+      isAvailable: true,
+    },
+    relations: ["staffId"],
+  });
+  console.log(result);
   return result;
 };
 
@@ -85,13 +107,13 @@ export const getStaffAvailability = async (_id: string) => {
  * @returns A promise that resolves to the updated availability slot.
  */
 export const bookAvailability = async (_id: string) => {
-  const result = await AvailabilitySchema.findByIdAndUpdate(
-    _id,
-    {
-      isAvailable: false,
-    },
-    { new: true }
-  );
+  const result = await availabilityRepository.update(_id, {
+    isAvailable: false,
+  });
+
+  if (!result) {
+    throw new Error("Availability not found");
+  }
   return result;
 };
 
@@ -100,12 +122,13 @@ export const bookAvailability = async (_id: string) => {
  * @param _id - The MongoDB ObjectId of the availability slot to be canceled.
  * @returns A promise that resolves to the updated availability slot.
  */
-export const cancelAvailability = async (_id: Types.ObjectId) => {
-  const result = await AvailabilitySchema.findByIdAndUpdate(
-    _id,
-    {
-      isAvailable: true,
-    },
-    { new: true }
-  );
+export const cancelAvailability = async (_id: string) => {
+  const result = await availabilityRepository.update(_id, {
+    isAvailable: true,
+  });
+
+  if (!result) {
+    throw new Error("Availability not found");
+  }
+  return result;
 };

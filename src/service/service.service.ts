@@ -1,5 +1,9 @@
+import { AppDataSource } from "../common/services/postgres-database.service";
 import ServiceSchema from "../service/service.schema";
 import { IService } from "./service.dto";
+import { Service } from "./service.entity";
+
+const serviceRepository = AppDataSource.getRepository(Service);
 
 /**
  * Creates a new service.
@@ -7,17 +11,25 @@ import { IService } from "./service.dto";
  * @returns The newly created service object.
  */
 export const createService = async function (data: IService) {
-  const result = await ServiceSchema.create({ ...data });
+  //mongodb
+  // const result = await ServiceSchema.create({ ...data });
+  // return result;
+  //postgres
+  const result = await serviceRepository.create(data);
+  await serviceRepository.save(result);
   return result;
 };
-
 
 /**
  * Retrieves all services in the database.
  * @returns A promise that resolves to an array of service objects.
  */
 export const getAllServices = async function () {
-  const result = await ServiceSchema.find({}).lean();
+  //mongodb
+  // const result = await ServiceSchema.find({}).lean();
+  // return result;
+  //postgres
+  const result = await serviceRepository.find();
   return result;
 };
 
@@ -27,7 +39,12 @@ export const getAllServices = async function () {
  * @returns The service with the given id if found, null otherwise.
  */
 export const getServiceById = async function (id: string) {
-  const result = await ServiceSchema.findById(id).lean();
+  //mongodb
+  // const result = await ServiceSchema.findById(id).lean();
+  // return result;
+
+  //postgres
+  const result = await serviceRepository.findOneBy({ _id: id });
   return result;
 };
 
@@ -38,14 +55,18 @@ export const getServiceById = async function (id: string) {
  * @returns The updated service.
  */
 export const updateService = async function (id: string, data: IService) {
-  const result = await ServiceSchema.findByIdAndUpdate(
-    id,
-    { ...data },
-    { new: true }
-  );
+  //mongo
+  // const result = await ServiceSchema.findByIdAndUpdate(
+  //   id,
+  //   { ...data },
+  //   { new: true }
+  // );
+  // return result;
+
+  //postgres
+  const result = await serviceRepository.update(id, data);
   return result;
 };
-
 
 /**
  * Deletes a service by id.
@@ -53,6 +74,12 @@ export const updateService = async function (id: string, data: IService) {
  * @returns The deleted service.
  */
 export const deleteService = async function (id: string) {
-  const result = await ServiceSchema.findByIdAndDelete(id);
-  return result;
+
+  //mongo
+  // const result = await ServiceSchema.findByIdAndDelete(id);
+  // return result;
+
+  const result = await serviceRepository.delete(id);
+  return result
+  
 };

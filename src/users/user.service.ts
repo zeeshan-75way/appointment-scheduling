@@ -243,9 +243,10 @@ export const updatePassword = async function (token: string, password: string) {
   user.forgotPasswordTokenExpiry = null;
   //mongodb
   // await user.save({ validateBeforeSave: true });
+
+
   //postgres
   await userRepository.save(user);
-
   return user;
 };
 
