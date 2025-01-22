@@ -12,7 +12,6 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./src/swagger/swagger";
 
 import cron from "node-cron";
-import { upcomingReminder } from "./src/appointment/appointment.controller";
 import { limiter } from "./src/common/helper/rate-limiter";
 config();
 import "reflect-metadata";
@@ -52,10 +51,6 @@ const initApp = async (): Promise<void> => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.get("/", (req: Request, res: Response) => {
     res.send({ status: "ok" });
-  });
-  cron.schedule("0 * * * *", async () => {
-    console.log("Sending appointment reminders...");
-    await upcomingReminder();
   });
   // error handler
   app.use(errorHandler);

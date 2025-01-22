@@ -1,7 +1,6 @@
 import {
   Entity,
   Column,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -10,7 +9,8 @@ import {
 } from "typeorm";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../common/services/postgres-database.service";
-@Entity("User") // Table name in the database
+
+@Entity("User") 
 export class User {
   @PrimaryGeneratedColumn("uuid")
   _id: string;

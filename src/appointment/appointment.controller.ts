@@ -21,18 +21,22 @@ export const bookAppointment = asyncHandler(
     const bookSlot = await AvailabilityService.bookAvailability(
       req.body.availabilityId
     );
+
     if (!bookSlot) {
       throw new Error("Slot not found");
     }
-    // const appointment = await AppointmentService.bookAppointment(
-    //   req.body,
-    //   userId,
-    //   bookSlot?.date,
-    //   bookSlot?.startTime
-    // );
-    // if (appointment) {
-    //   res.send(createResponse(appointment, "Appointment Booked Successfully"));
-    // }
+    const appointment = await AppointmentService.bookAppointment(
+      req.body, // Data related to the appointment (e.g., description, etc.)
+      userId,
+      bookSlot?.date, // Date of the appointment from the booked slot
+      bookSlot?.startTime // Start time of the appointment from the booked slot
+    );
+    if (appointment) {
+      // Send the successful response
+      res
+        .status(200)
+        .send(createResponse(appointment, "Appointment Booked Successfully"));
+    }
   }
 );
 
@@ -48,12 +52,12 @@ export const bookAppointment = asyncHandler(
 export const cancelAppointment = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
+
     const appointment = await AppointmentService.cancelAppointment(id);
     if (!appointment) {
       throw new Error("Appointment not found");
     }
-    const availabilityId = appointment.availabilityId;
-
+    const availabilityId = appointment?.availabilityId._id;
     const bookSlot = await AvailabilityService.cancelAvailability(
       availabilityId
     );
@@ -61,22 +65,6 @@ export const cancelAppointment = asyncHandler(
     res.send(createResponse(appointment, "Appointment Cancelled Successfully"));
   }
 );
-
-/**
- * Sends reminders for upcoming appointments.
- * @async
- * @function
- * @throws {Error} If an error occurs while sending reminder emails.
- */
-export const upcomingReminder = async () => {
-  const result = await AppointmentService.upcomingReminder();
-  const response = await AppointmentService.sendAppointmentReminders(result);
-  if (response) {
-    console.log("Reminder sent successfully");
-  } else {
-    throw new Error("Error while sending email");
-  }
-};
 
 /**
  * @api {patch} /appointment/reschedule Reschedule an appointment
@@ -120,22 +108,23 @@ export const rescheduleAppointment = asyncHandler(
     const reschedule = await AppointmentService.rescheduleAppointment(
       appointmentId
     );
-    // const slot = await AvailabilityService.cancelAvailability(
-    //   appointment.availabilityId._id
-    // );
+    const slot = await AvailabilityService.cancelAvailability(
+      appointment.availabilityId._id
+    );
     const bookSlot = await AvailabilityService.bookAvailability(availabilityId);
     if (!bookSlot) {
       throw new Error("Slot not found");
     }
-    // const newappointment = await AppointmentService.bookAppointment(
-    //   req.body,
-    //   userId,
-    //   bookSlot?.date,
-    //   bookSlot?.startTime
-    // );
+    req.body.serviceId = reschedule.serviceId;
+    const newappointment = await AppointmentService.bookAppointment(
+      req.body,
+      userId,
+      bookSlot?.date,
+      bookSlot?.startTime
+    );
     if (appointment) {
       res.send(
-        createResponse("newappointment", "Appointment Rescheduled Successfully")
+        createResponse(newappointment, "Appointment Rescheduled Successfully")
       );
     }
   }
@@ -172,12 +161,11 @@ export const getUserAppointments = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = (req.user as IUser)._id;
     const appointments = await AppointmentService.getUserAppointments(userId);
-    if (!appointments || appointments.length <= 0) {
-      throw new Error("No Appointment for User");
+
+    if (!appointments || appointments.length === 0) {
+      throw new Error("No Appointments");
     }
-    res.send(
-      createResponse(appointments, "Appointment Rescheduled Successfully")
-    );
+
+    res.send(createResponse(appointments, "Appointments fetched successfully"));
   }
 );
-

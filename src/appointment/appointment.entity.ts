@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToOne,
   ManyToMany,
+  OneToMany,
 } from "typeorm";
 import { User } from "../users/user.entity";
 import { Service } from "../service/service.entity";
@@ -24,11 +25,11 @@ export class Appointment {
 
   @ManyToOne(() => Service)
   @JoinColumn({ name: "serviceId" })
-  serviceId: User;
+  serviceId: Service;
 
   @OneToOne(() => Availability)
   @JoinColumn({ name: "availabilityId" })
-  availabilityId: User;
+  availabilityId: Availability;
 
   @Column({
     type: "enum",

@@ -107,13 +107,12 @@ export const getStaffAvailability = async (_id: string) => {
  * @returns A promise that resolves to the updated availability slot.
  */
 export const bookAvailability = async (_id: string) => {
-  const result = await availabilityRepository.update(_id, {
-    isAvailable: false,
-  });
-
+  const result = await availabilityRepository.findOneBy({ _id: _id });
   if (!result) {
     throw new Error("Availability not found");
   }
+  result.isAvailable = false;
+  await availabilityRepository.save(result);
   return result;
 };
 
@@ -123,12 +122,11 @@ export const bookAvailability = async (_id: string) => {
  * @returns A promise that resolves to the updated availability slot.
  */
 export const cancelAvailability = async (_id: string) => {
-  const result = await availabilityRepository.update(_id, {
-    isAvailable: true,
-  });
-
+  const result = await availabilityRepository.findOneBy({ _id: _id });
   if (!result) {
     throw new Error("Availability not found");
   }
+  result.isAvailable = true;
+  await availabilityRepository.save(result);
   return result;
 };
