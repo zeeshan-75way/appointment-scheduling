@@ -15,6 +15,8 @@ import cron from "node-cron";
 import { upcomingReminder } from "./src/appointment/appointment.controller";
 import { limiter } from "./src/common/helper/rate-limiter";
 config();
+import "reflect-metadata";
+import { AppDataSource } from "./src/common/services/postgres-database.service";
 const port = Number(process.env.PORT) ?? 5000;
 
 const app: Express = express();
@@ -35,7 +37,16 @@ declare global {
 
 const initApp = async (): Promise<void> => {
   // init mongodb
-  await initDB();
+  // await initDB();
+
+  //init postgres
+  AppDataSource.initialize()
+    .then(() => {
+      console.log("Database postgres connected successfully");
+    })
+    .catch((error) => {
+      console.error("postgres Database connection failed:", error);
+    });
   app.use(limiter);
   app.use("/api", routes);
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

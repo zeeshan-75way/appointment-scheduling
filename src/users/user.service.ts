@@ -3,15 +3,25 @@ import UserSchema from "./user.schema";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../common/helper/sendEmail";
+import { AppDataSource } from "../common/services/postgres-database.service";
+import { User } from "./user.entity";
+
+const userRepository = AppDataSource.getRepository(User);
 /**
  * Creates a new user.
  * @param data - The user data to create the user with.
  * @returns A promise that resolves to the newly created user object.
  */
 export const createUser = async (data: IUser) => {
-  const result = await UserSchema.create({ ...data });
+  //postgres
+  const result = await userRepository.create(data);
+  await userRepository.save(result);
   return result;
+  //mongoose
+  // const result = await UserSchema.create({ ...data });
+  // return result;
 };
+
 /**
  * Retrieves a user by their email address.
  * @param email - The email address of the user to retrieve.
@@ -19,7 +29,12 @@ export const createUser = async (data: IUser) => {
  */
 
 export const getUserByEmail = async (email: string) => {
-  const result = await UserSchema.findOne({ email: email }).lean();
+  //mongodb
+  // const result = await UserSchema.findOne({ email: email }).lean();
+  // return result;
+
+  //postgres
+  const result = await userRepository.findOneBy({ email: email });
   return result;
 };
 
@@ -28,9 +43,18 @@ export const getUserByEmail = async (email: string) => {
  * @returns A promise that resolves to an array of user objects without their passwords.
  */
 export const getAllUsers = async () => {
-  const result = await UserSchema.find({ role: "USER" })
-    .select("-password")
-    .lean();
+  //mongodb
+  // const result = await UserSchema.find({ role: "USER" })
+  //   .select("-password")
+  //   .lean();
+  // return result;
+
+  //postgres
+  const result = await userRepository.find({
+    where: { role: "USER" },
+    select: ["_id", "name", "email", "role", "position", "department"],
+  });
+
   return result;
 };
 
@@ -65,14 +89,16 @@ export const generateRefreshToken = async function (_id: string, role: string) {
       expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY,
     }
   );
-  const user = await UserSchema.findByIdAndUpdate(
-    { _id: _id },
-    { refreshToken: token },
-    {
-      new: true,
-    }
-  );
-  console.log(user);
+  const user = await userRepository.findOneBy({ _id: _id });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  user.refreshToken = token; // Update the refreshToken field
+
+  // Save the updated user
+  const updatedUser = await userRepository.save(user);
+  console.log("Updated User:", updatedUser);
   return token;
 };
 
@@ -105,7 +131,7 @@ export const refreshTokens = async function (token: string) {
   if (!decoded) {
     throw new Error("Invalid token");
   }
-  const user = await UserSchema.findById(decoded._id);
+  const user = await userRepository.findOneBy({ _id: decoded._id });
   if (!user) {
     throw new Error("User not found");
   }
@@ -122,15 +148,25 @@ export const refreshTokens = async function (token: string) {
  * @throws {Error} If the user is not found.
  */
 export const logout = async function (_id: string) {
-  const user = await UserSchema.findByIdAndUpdate(
-    { _id },
-    {
-      $unset: {
-        refreshToken: 1,
-      },
-    },
-    { new: true }
-  ).select("-password");
+  //mongodb
+  // const user = await UserSchema.findByIdAndUpdate(
+  //   { _id },
+  //   {
+  //     $unset: {
+  //       refreshToken: 1,
+  //     },
+  //   },
+  //   { new: true }
+  // ).select("-password");
+  // return user;
+
+  //postgres
+  const user = await userRepository.findOneBy({ _id: _id });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  user.refreshToken = null;
+  await userRepository.save(user);
   return user;
 };
 
@@ -145,16 +181,20 @@ export const logout = async function (_id: string) {
 export const forgotPassword = async function (
   email: string,
   forgotPasswordToken: string,
-  forgotPasswordTokenExpiry: Date | ""
+  forgotPasswordTokenExpiry: Date
 ) {
-  const user = await UserSchema.findOne({ email });
+  //mongodb
+  // const user = await UserSchema.findOne({ email });
+  const user = await userRepository.findOneBy({ email: email });
   if (!user) {
     throw new Error("User not found");
   }
   user.forgotPasswordToken = forgotPasswordToken;
   user.forgotPasswordTokenExpiry = forgotPasswordTokenExpiry;
-
-  await user.save();
+  //mongodb
+  // await user.save();
+  //postgres
+  await userRepository.save(user);
   const url = `http://localhost:5000/${forgotPasswordToken}`;
 
   const mailSent = await sendEmail({
@@ -182,27 +222,38 @@ export const updatePassword = async function (token: string, password: string) {
   if (!password) {
     throw new Error("Password is required");
   }
-  const user = await UserSchema.findOne({ forgotPasswordToken: token }).select(
-    "-password"
-  );
-  if (!user) {
+  // const user = await UserSchema.findOne({ forgotPasswordToken: token }).select(
+  //   "-password"
+  // );
+
+  const user = await userRepository.findOneBy({ forgotPasswordToken: token });
+  if (!user || !user.forgotPasswordTokenExpiry) {
     throw new Error("User with specific token not found");
   }
   const date = new Date();
+  const expiryDate = new Date(user.forgotPasswordTokenExpiry);
 
-  if (date > user.forgotPasswordTokenExpiry) {
+  if (date > expiryDate) {
     throw new Error("Token Expired");
   }
+  console.log(date, expiryDate);
 
   user.forgotPasswordToken = "";
   user.password = password;
-  user.forgotPasswordTokenExpiry = "";
-  await user.save({ validateBeforeSave: true });
+  user.forgotPasswordTokenExpiry = null;
+  //mongodb
+  // await user.save({ validateBeforeSave: true });
+  //postgres
+  await userRepository.save(user);
 
   return user;
 };
 
 export const getUserById = async function (_id: string) {
-  const user = await UserSchema.findById(_id);
+  //mongodb
+  // const user = await UserSchema.findById(_id);
+  // return user;
+  //postgres
+  const user = await userRepository.findOneBy({ _id: _id });
   return user;
 };

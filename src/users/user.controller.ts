@@ -16,6 +16,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
   //Check if user already exists
   const existingUser = await UserService.getUserByEmail(email);
   //if already exists then throw error
+
   if (existingUser) {
     throw new Error("User already exists");
   }
@@ -24,13 +25,9 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
     ...req.body,
   });
 
-  res.send(
-    createResponse(
-      result,
-      "User Created Successfully"
-    )
-  );
+  res.send(createResponse(result, "User Created Successfully"));
 });
+
 /**
  * login user
  * @route POST /user/login
@@ -45,16 +42,15 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   if (!user) {
     throw new Error("User not found");
   }
-  //check if password is valid
+  // check if password is valid
   const isPasswordValid = await UserService.comparePassword({
     password,
-    userPassword: user.password,
+    userPassword: user?.password || "",
   });
-  //if password is not valid then throw an error
+  // if password is not valid then throw an error
   if (!isPasswordValid) {
     throw new Error("Invalid password");
   }
-
 
   //if password is valid then generate a token and send token in cookies to validate
   const accessToken = await UserService.generateAccessToken(
@@ -71,6 +67,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     .cookie("refreshToken", refreshToken)
     .send(createResponse({ accessToken, refreshToken }, "Login Successfully"));
 });
+
 /**
  * Retrieves all users in the database.
  * @route GET /user/all
@@ -82,6 +79,7 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   //send the response array
   res.send(createResponse(result, "Users Fetched Successfully"));
 });
+
 /**
  * @function
  * @name refreshTokens
@@ -104,6 +102,7 @@ export const refreshTokens = asyncHandler(
       .send(createResponse(response, "Tokens Refreshed Successfully"));
   }
 );
+
 /**
  * Logs out the current user by removing their access and refresh tokens.
  * @function
@@ -118,7 +117,7 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   res
     .clearCookie("accessToken")
     .clearCookie("refreshToken")
-    .send(createResponse(user, "Logout Successfully"));
+    .send(createResponse(null, "Logout Successfully"));
 });
 
 
