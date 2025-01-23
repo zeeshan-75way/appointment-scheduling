@@ -12,7 +12,6 @@ import { IUser } from "../users/user.dto";
  *
  * @apiParam {ObjectId} availabilityId The id of the availability slot to be booked
  * @apiParam {ObjectId} serviceId The id of the service to be booked
- *
  * @apiSuccess (201) {Object} appointment The booked appointment
  */
 export const bookAppointment = asyncHandler(

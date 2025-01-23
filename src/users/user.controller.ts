@@ -24,12 +24,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
     ...req.body,
   });
 
-  res.send(
-    createResponse(
-      result,
-      "User Created Successfully"
-    )
-  );
+  res.send(createResponse(result, "User Created Successfully"));
 });
 /**
  * login user
@@ -55,7 +50,6 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Invalid password");
   }
 
-
   //if password is valid then generate a token and send token in cookies to validate
   const accessToken = await UserService.generateAccessToken(
     user._id,
@@ -65,11 +59,16 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     user._id,
     user.role
   );
-
+  const { password: p, ...rest } = user;
   res
     .cookie("accessToken", accessToken)
     .cookie("refreshToken", refreshToken)
-    .send(createResponse({ accessToken, refreshToken }, "Login Successfully"));
+    .send(
+      createResponse(
+        { user: rest, accessToken, refreshToken },
+        "Login Successfully"
+      )
+    );
 });
 /**
  * Retrieves all users in the database.
@@ -120,7 +119,6 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
     .clearCookie("refreshToken")
     .send(createResponse(user, "Logout Successfully"));
 });
-
 
 /**
  * Handles forgot password functionality.

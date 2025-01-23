@@ -10,7 +10,7 @@ import cookieParser = require("cookie-parser");
 import { IUser } from "./src/users/user.dto";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./src/swagger/swagger";
-
+import cors from "cors";
 import cron from "node-cron";
 import { upcomingReminder } from "./src/appointment/appointment.controller";
 import { limiter } from "./src/common/helper/rate-limiter";
@@ -18,12 +18,18 @@ config();
 const port = Number(process.env.PORT) ?? 5000;
 
 const app: Express = express();
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(morgan("dev"));
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 declare global {
   namespace Express {
     interface User extends Omit<IUser, "password"> {}

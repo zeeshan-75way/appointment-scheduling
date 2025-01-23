@@ -20,7 +20,10 @@ export const createAvailability = asyncHandler(
     if (!user) {
       throw new Error("Staff not Found");
     }
-    const result = await AvailabilityService.createAvailability(req.body,userId);
+    const result = await AvailabilityService.createAvailability(
+      req.body,
+      userId
+    );
     res.send(createResponse(result, "Slots Created Successfully"));
   }
 );
@@ -65,9 +68,6 @@ export const getStaffAvailability = asyncHandler(
     }
     const result = await AvailabilityService.getStaffAvailability(id);
 
-    res.send(
-      createResponse(result, "All Slots of Staff Fetched Successfully")
-    );
+    res.send(createResponse(result, "All Slots of Staff Fetched Successfully"));
   }
 );
-
