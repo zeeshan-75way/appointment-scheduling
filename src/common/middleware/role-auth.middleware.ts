@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { type NextFunction, type Request, type Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
@@ -19,9 +19,18 @@ export const roleAuth = (roles: IUser["role"][], publicRoutes: string[] = []) =>
           message: `Invalid token`,
         });
       }
-      const decodedUser = jwt.verify(token, process.env.JWT_SECRET!);
+      try {
+        const decodedUser = jwt.verify(
+          token,
+          process.env.JWT_SECRET!
+        ) as JwtPayload;
+        req.user = decodedUser as IUser;
+      } catch (err) {
+        throw createHttpError(401, {
+          message: "Invalid token",
+        });
+      }
 
-      req.user = decodedUser as IUser;
       const user = req.user as IUser;
       if (
         user.role == null ||
